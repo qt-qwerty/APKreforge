@@ -31,11 +31,17 @@ class BuildService : Service() {
         when (intent?.action) {
             ACTION_CANCEL -> if (job?.isActive == true) job?.cancel() else finish()
             ACTION_BUILD -> if (job?.isActive != true) {
+                // L'URL vient de l'écran principal ; tout le reste des réglages avancés.
+                val p = Prefs(this)
                 val req = BuildRequest(
                     repoUrl = intent.getStringExtra(EXTRA_REPO).orEmpty(),
-                    branch = intent.getStringExtra(EXTRA_BRANCH).orEmpty(),
-                    gradleTask = intent.getStringExtra(EXTRA_TASK).orEmpty().ifBlank { "assembleDebug" },
-                    token = intent.getStringExtra(EXTRA_TOKEN).orEmpty()
+                    branch = p.get(Prefs.BRANCH).trim(),
+                    gradleTask = p.get(Prefs.TASK).trim().ifBlank { "assembleDebug" },
+                    token = p.get(Prefs.TOKEN).trim(),
+                    xmxMb = (p.get(Prefs.XMX).trim().toIntOrNull() ?: 1536).coerceIn(512, 8192),
+                    extraArgs = p.get(Prefs.EXTRA_ARGS),
+                    offline = p.getBool(Prefs.OFFLINE),
+                    cleanAfter = p.getBool(Prefs.CLEAN_AFTER)
                 )
                 job = scope.launch { doBuild(req) }
             } else stopIfIdle()

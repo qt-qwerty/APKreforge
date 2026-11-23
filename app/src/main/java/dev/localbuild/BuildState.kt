@@ -26,8 +26,14 @@ class Prefs(ctx: Context) {
 
     fun get(key: String, def: String = ""): String = sp.getString(key, def) ?: def
     fun set(key: String, value: String) = sp.edit().putString(key, value).apply()
+    fun getBool(key: String, def: Boolean = false): Boolean = sp.getBoolean(key, def)
+    fun setBool(key: String, value: Boolean) = sp.edit().putBoolean(key, value).apply()
 
     companion object {
+        const val XMX = "xmx_mb"
+        const val EXTRA_ARGS = "extra_args"
+        const val OFFLINE = "offline"
+        const val CLEAN_AFTER = "clean_after"
         const val REPO = "repo"
         const val BRANCH = "branch"
         const val TASK = "task"

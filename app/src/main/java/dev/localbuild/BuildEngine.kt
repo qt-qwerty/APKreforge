@@ -15,7 +15,11 @@ data class BuildRequest(
     val repoUrl: String,
     val branch: String = "",
     val gradleTask: String = "assembleDebug",
-    val token: String = ""
+    val token: String = "",
+    val xmxMb: Int = 1536,
+    val extraArgs: String = "",
+    val offline: Boolean = false,
+    val cleanAfter: Boolean = false
 )
 
 class BuildEngine(private val ctx: Context, private val toolchain: ToolchainManager) {
@@ -53,15 +57,18 @@ class BuildEngine(private val ctx: Context, private val toolchain: ToolchainMana
         val gradleHome = File(ctx.filesDir, "gradle-home").apply { mkdirs() }
 
         // 3. Gradle
-        val cmd = listOf(
-            "/system/bin/sh", "gradlew", req.gradleTask,
-            "--no-daemon", "--console=plain", "--stacktrace",
+        val extra = req.extraArgs.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
+        val cmd = buildList {
+            addAll(listOf("/system/bin/sh", "gradlew", req.gradleTask))
+            addAll(listOf("--no-daemon", "--console=plain", "--stacktrace"))
+            if (req.offline) add("--offline")
             // Pas de lib native-platform pour Linux/bionic : sans ça Gradle plante au démarrage.
-            "-Dorg.gradle.native=false",
-            "-Dorg.gradle.jvmargs=-Xmx1536m -Dfile.encoding=UTF-8",
+            add("-Dorg.gradle.native=false")
+            add("-Dorg.gradle.jvmargs=-Xmx${req.xmxMb}m -Dfile.encoding=UTF-8")
             // aapt2 de Maven est x86_64 : on force celui de l'appareil.
-            "-Pandroid.aapt2FromMavenOverride=${toolchain.aapt2.absolutePath}"
-        )
+            add("-Pandroid.aapt2FromMavenOverride=${toolchain.aapt2.absolutePath}")
+            addAll(extra)
+        }
         log("▶ ${cmd.drop(2).joinToString(" ")}")
 
         val pb = ProcessBuilder(cmd).directory(work).redirectErrorStream(true)
@@ -101,6 +108,10 @@ class BuildEngine(private val ctx: Context, private val toolchain: ToolchainMana
         val dest = File(outDir, "${slugOf(req.repoUrl)}-${apk.name}")
         apk.copyTo(dest, overwrite = true)
         log("✔ APK : ${dest.name} (${dest.length() / 1024} Ko)")
+        if (req.cleanAfter) {
+            work.deleteRecursively()
+            log("   sources nettoyées")
+        }
         dest
     }
 

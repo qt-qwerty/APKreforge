@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icône de remplacement (enclume + pièce incandescente + étincelles).
+     Pour reprendre celle d'APKforge : remplacer ce fichier par son ic_launcher_foreground.xml. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- lueur -->
+    <path
+        android:fillColor="#33FF7A1A"
+        android:pathData="M54,52m-20,0a20,20 0,1 1,40 0a20,20 0,1 1,-40 0" />
+    <!-- enclume -->
+    <path
+        android:fillColor="#5B6270"
+        android:pathData="M22,54 L84,54 L84,61 L72,61 L75,72 L82,72 L82,80 L30,80 L30,72 L37,72 L40,61 L28,61 Z" />
+    <path
+        android:fillColor="#8A93A6"
+        android:pathData="M26,54 L84,54 L84,56 L26,56 Z" />
+    <!-- pièce incandescente -->
+    <path
+        android:fillColor="#FFB23E"
+        android:pathData="M40,47 L68,47 L68,54 L40,54 Z" />
+    <!-- étincelles -->
+    <path
+        android:fillColor="#FFD27A"
+        android:pathData="M36,38 L38,41 L35,41 Z M54,32 L56,36 L52,36 Z M72,38 L74,41 L71,41 Z M46,36 L47,38 L45,38 Z M63,35 L64,37 L62,37 Z" />
+</vector>

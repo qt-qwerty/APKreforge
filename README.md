@@ -11,6 +11,16 @@ Application Android (Kotlin + Jetpack Compose) qui compile en local, sur le tél
 3. **Résultat** : l'APK le plus récent de `build/outputs/apk` est copié dans `files/outputs/`
    et installable via l'installeur système (FileProvider).
 
+## Interface
+
+- **Écran principal** : un champ (URL du dépôt), un bouton *Forger l'APK*, l'animation de forge
+  (enclume, marteau, étincelles) pendant le build, logs repliables.
+- **Paramètres avancés** : branche, jeton d'accès, tâche Gradle, mémoire de la JVM, arguments Gradle
+  supplémentaires, mode hors-ligne, nettoyage après build, URLs de la toolchain, vidage du cache.
+  Ces réglages sont mémorisés et appliqués à chaque build.
+- L'icône (`res/drawable/ic_launcher_foreground.xml`) est un remplaçant : pour reprendre celle d'APKforge,
+  il suffit de remplacer ce fichier par le sien.
+
 ## Choix techniques à connaître
 
 - **`targetSdk = 28`** : depuis Android 10, il est interdit d'exécuter des binaires du stockage privé
