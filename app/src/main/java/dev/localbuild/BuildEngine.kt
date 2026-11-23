@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.lib.ProgressMonitor
+import org.eclipse.jgit.lib.NullProgressMonitor
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
 
@@ -109,15 +109,12 @@ class BuildEngine(private val ctx: Context, private val toolchain: ToolchainMana
         url.trimEnd('/').removeSuffix(".git").substringAfter("://")
             .replace(Regex("[^A-Za-z0-9._-]"), "_").takeLast(80)
 
+    // NullProgressMonitor implémente déjà toutes les méthodes : robuste aux changements d'interface de JGit.
     private class LogProgress(
         private val log: (String) -> Unit,
         private val cancelled: () -> Boolean
-    ) : ProgressMonitor {
-        override fun start(totalTasks: Int) {}
+    ) : NullProgressMonitor() {
         override fun beginTask(title: String?, totalWork: Int) { log("   git : $title") }
-        override fun update(completed: Int) {}
-        override fun endTask() {}
         override fun isCancelled() = cancelled()
-        override fun showDuration(enabled: Boolean) {}
     }
 }
