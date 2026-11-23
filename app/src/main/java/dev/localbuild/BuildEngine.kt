@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.withContext
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.lib.NullProgressMonitor
+import org.eclipse.jgit.lib.ProgressMonitor
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import java.io.File
 
@@ -36,7 +36,6 @@ class BuildEngine(private val ctx: Context, private val toolchain: ToolchainMana
             val clone = Git.cloneRepository()
                 .setURI(req.repoUrl)
                 .setDirectory(work)
-                .setDepth(1)
                 .setProgressMonitor(LogProgress(log) { job.isCancelled })
             if (req.branch.isNotBlank()) clone.setBranch(req.branch)
             // Jeton d'accès (GitHub/GitLab) : passé comme nom d'utilisateur, mot de passe vide.
@@ -109,12 +108,15 @@ class BuildEngine(private val ctx: Context, private val toolchain: ToolchainMana
         url.trimEnd('/').removeSuffix(".git").substringAfter("://")
             .replace(Regex("[^A-Za-z0-9._-]"), "_").takeLast(80)
 
-    // NullProgressMonitor implémente déjà toutes les méthodes : robuste aux changements d'interface de JGit.
+    // Interface ProgressMonitor de JGit 5.13.3 : exactement ces 5 méthodes (vérifié avec javap).
     private class LogProgress(
         private val log: (String) -> Unit,
         private val cancelled: () -> Boolean
-    ) : NullProgressMonitor() {
+    ) : ProgressMonitor {
+        override fun start(totalTasks: Int) {}
         override fun beginTask(title: String?, totalWork: Int) { log("   git : $title") }
+        override fun update(completed: Int) {}
+        override fun endTask() {}
         override fun isCancelled() = cancelled()
     }
 }

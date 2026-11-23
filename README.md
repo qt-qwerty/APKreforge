@@ -5,7 +5,7 @@ Application Android (Kotlin + Jetpack Compose) qui compile en local, sur le tél
 
 ## Fonctionnement
 
-1. **Clone** : JGit (Java pur, HTTPS) clone le dépôt en `--depth 1`, branche et jeton optionnels.
+1. **Clone** : JGit (Java pur, HTTPS) clone le dépôt (historique complet : JGit 5.13 ne gère pas `--depth`), branche et jeton optionnels.
 2. **Build** : lance `gradlew <tâche>` avec le JDK / SDK embarqués, dans un service au premier plan
    (le build survit à la mise en arrière-plan, wake lock partiel pendant l'opération).
 3. **Résultat** : l'APK le plus récent de `build/outputs/apk` est copié dans `files/outputs/`
